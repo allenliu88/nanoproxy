@@ -20,6 +20,15 @@ git clone https://github.com/allenliu88/nanoproxy.git
 cd nanoproxy
 ```
 
+For Mac Apple M1
+
+```shell
+CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o bin/nanoproxy-darwin-arm64 nanoproxy.go
+
+chmod +x bin/nanoproxy-darwin-arm64
+nohup bin/nanoproxy-darwin-arm64 > nanoproxy.log 2>&1 &
+```
+
 For Linux
 
 ```shell
