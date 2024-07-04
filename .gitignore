@@ -1,3 +1,29 @@
-# OS X
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# OS/X
 .DS_Store
-bin
+.idea/
+.vscode
+mock/
+bin/
+/-cluster-agent
+
+# Dependency directories, for performance and network restrict, re-push vender to git
+## vendor/
+
+# Go workspace file
+go.work
+
+# VSCode debug cmd/manager/__debug_bin
+*debug_bin
