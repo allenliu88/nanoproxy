@@ -83,7 +83,7 @@ curl -x 1.1.1.1:8080 2.2.2.2:80
 - Go's HTTP server implementation is really good. I read it all. Only missing feature I desire is the ability to process multiple pipelined HTTP requests in parallel.
 - Go's HTTP client implementation is easy to use, based on my limited experience in this proxy. I have not read its implementation.
 
-## 如何在日志中添加`vcs`信息？
+## 如何在日志中打印`vcs`相关构建信息？
 
 实际上借助了`knative.dev/pkg/changeset`。参考[knative/pkg/blob/main/changeset/commit.go](https://github.com/knative/pkg/blob/main/changeset/commit.go)：Package changeset returns version control info that was embedded in the golang binary.
 
@@ -208,9 +208,11 @@ Defined keys include:
 - vcs.time: the modification time associated with vcs.revision, in RFC3339 format
 - vcs.modified: true or false indicating whether the source tree had local modifications
 
-Karpenter应该是使用了[ko-build/ko](https://github.com/ko-build/ko)工具构建镜像，貌似自动会加上如上信息。参考[Discussion: Can ko generate SLSA provenance? #896](https://github.com/ko-build/ko/issues/896)。
+Karpenter应该是使用了[ko-build/ko](https://github.com/ko-build/ko)工具构建镜像，貌似自动会加上如上信息。参考[Discussion: Can ko generate SLSA provenance? #896](https://github.com/ko-build/ko/issues/896)。实际上从如下的说明中可知，实际上`go build`只要不指定具体的`*.go`文件，构建时就会自动填充充如上`build vcs`相关信息，或者理论上使用`go install`构建也可以自动填充如上`build vcs`相关信息，但`go install`方案尚未经验证（截止当前时间`2024-07-05`）。
 
-如果我们自己构建可执行时，注意，不能指定`*.go`文件，否则`go build`无法填充如上`build vcs`相关信息，以[allenliu88/nanoproxy](https://github.com/allenliu88/nanoproxy)为例，注意区别两者区别，据说是缺陷[runtime/debug: vcs.modified populated in ReadBuildInfo for go install but not go build#51637](https://github.com/golang/go/issues/51637).
+## 如何在构建时添加`vcs`相关构建信息？
+
+如果我们自己构建可执行时，注意，不能指定具体的`*.go`文件，否则`go build`无法自动填充如上`build vcs`相关信息，以[allenliu88/nanoproxy](https://github.com/allenliu88/nanoproxy)为例，注意区别两者区别，据说是缺陷[runtime/debug: vcs.modified populated in ReadBuildInfo for go install but not go build#51637](https://github.com/golang/go/issues/51637).
 
 ```shell
 $ CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o bin/nanoproxy-darwin-arm64 nanoproxy.go
